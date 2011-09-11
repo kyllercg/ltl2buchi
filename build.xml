@@ -1,0 +1,138 @@
+<!-- Historico de revisao do documento -->
+<!--
+    23.03.2003:		data de criacao do arquivo
+-->
+
+<project name="ltl2buchi" default="compile" basedir=".">
+
+
+<!-- ===================== Property Definitions =========================== -->
+
+  <property file="build.properties"/>
+  <property environment="env"/>
+
+
+<!-- ==================== File and Directory Names ======================== -->
+
+  <property name="app.name"      value="ltl2buchi"/>
+  <property name="app.version"   value="0.1"/>
+  <property name="build.home"    value="build/"/>
+  <property name="conf.dir"      value="conf"/>
+
+
+<!--  ==================== Compilation Control Options ==================== -->
+
+  <property name="compile.debug"       value="true"/>
+  <property name="compile.deprecation" value="true"/>
+  <property name="compile.optimize"    value="true"/>
+
+
+<!-- ==================== Compilation Classpath =========================== -->
+
+  <path id="compile.classpath">
+    <fileset dir="lib">
+	<include name="*.jar"/>
+    </fileset>
+  </path>
+
+
+<!-- ==================== All Target ====================================== -->
+
+  <target name="help" description="Shows Options">
+    <echo>
+	
+                   ..:: ltl2buchi ::..
+
+    You have the following options under this project:
+
+    ant compile	--> compile the application
+    ant testes	--> execute tests (possible needs JUnit)
+    ant dist	--> build distribution file (.tar.gz)
+    ant clean	--> clean all previous compiled files
+	
+    </echo>   
+  </target>
+
+  <target name="all" depends="clean,compile"
+          description="clean, then compile"/>
+
+
+<!-- ==================== Clean Target ==================================== -->
+
+  <target name="clean" description="Clean previous compiled files">
+    <delete dir="${build.home}"/>
+  </target>
+
+
+<!-- ==================== Compile Target ================================== -->
+
+  <target name="compile" depends="prepare" description="Compile Java sources">
+
+    <!-- Compile Java classes as necessary -->
+    <javac srcdir="src" 
+    	   destdir="${build.home}/classes"
+	   debug="${compile.debug}"
+	   deprecation="${compile.deprecation}"
+	   optimize="${compile.optimize}">
+	<classpath refid="compile.classpath"/>
+    </javac>
+  </target>
+
+
+<!-- ==================== Prepare Target ================================== -->
+
+  <target name="prepare">
+    <mkdir dir="${build.home}"/>
+    <mkdir dir="${build.home}/classes"/>
+    <mkdir dir="${build.home}/docs"/>
+    <mkdir dir="${build.home}/docs/api"/>
+    <mkdir dir="${build.home}/lib"/>
+
+    <copy todir="${build.home}/classes/ltl2buchi">
+	<fileset dir="${conf.dir}">
+	    <include name="formulas.ltl"/>
+	</fileset>
+    </copy>
+  </target>
+
+
+<!-- ==================== Javadoc Target ================================== -->
+
+  <target name="javadoc" depends="compile"
+	  description="Create Javadoc API documentation">
+    <javadoc sourcepath="src" destdir="${dist.home}/docs/api" packagenames="*">
+	<classpath refid="compile.classpath"/>
+    </javadoc>
+  </target>
+
+
+<!-- ========================== Teste Target ============================= -->
+
+<!-- Para executar os testes (via JUnit) do sistema -->
+
+<!--
+
+  <target name="testes">
+    <junit printsummary="true" dir="${build.home}/WEB-INF/classes" fork="true">
+	<classpath path="${build.home}/WEB-INF/lib/DBConnectionManagerInterbase.jar" />
+	<classpath path="${build.home}/WEB-INF/classes" />
+	<classpath path="${env.CLASSPATH}" />
+	<formatter type="plain" usefile="false" />
+	<test name="br.com.eradigital.bovagro.testes.TestaTudo" />
+    </junit>
+  </target>
+-->
+
+
+<!-- ========================== Run Target ============================= -->
+
+  <target name="run" depends="compile">
+    <java classname="ltl2buchi/Ltl2Buchi">
+    	<arg value="teste" />
+	<classpath>
+	    <pathelement path="${build.home}/classes" />
+	</classpath>
+    </java>
+  </target>
+
+</project>
